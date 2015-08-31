@@ -1,0 +1,89 @@
+Elm.StartApp = Elm.StartApp || {};
+Elm.StartApp.make = function (_elm) {
+   "use strict";
+   _elm.StartApp = _elm.StartApp || {};
+   if (_elm.StartApp.values)
+   return _elm.StartApp.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "StartApp",
+   $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm);
+   var start = function (config) {
+      return function () {
+         var update = F2(function (_v0,
+         _v1) {
+            return function () {
+               switch (_v1.ctor)
+               {case "_Tuple2":
+                  return function () {
+                       switch (_v0.ctor)
+                       {case "Just":
+                          return A2(config.update,
+                            _v0._0,
+                            _v1._0);}
+                       _U.badCase($moduleName,
+                       "on line 92, column 13 to 39");
+                    }();}
+               _U.badCase($moduleName,
+               "on line 92, column 13 to 39");
+            }();
+         });
+         var messages = $Signal.mailbox($Maybe.Nothing);
+         var address = A2($Signal.forwardTo,
+         messages.address,
+         $Maybe.Just);
+         var inputs = $Signal.mergeMany(A2($List._op["::"],
+         messages.signal,
+         A2($List.map,
+         $Signal.map($Maybe.Just),
+         config.inputs)));
+         var effectsAndModel = A3($Signal.foldp,
+         update,
+         config.init,
+         inputs);
+         var model = A2($Signal.map,
+         $Basics.fst,
+         effectsAndModel);
+         return {_: {}
+                ,html: A2($Signal.map,
+                config.view(address),
+                model)
+                ,model: model
+                ,tasks: A2($Signal.map,
+                function ($) {
+                   return $Effects.toTask(address)($Basics.snd($));
+                },
+                effectsAndModel)};
+      }();
+   };
+   var App = F3(function (a,b,c) {
+      return {_: {}
+             ,html: a
+             ,model: b
+             ,tasks: c};
+   });
+   var Config = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,init: a
+             ,inputs: d
+             ,update: b
+             ,view: c};
+   });
+   _elm.StartApp.values = {_op: _op
+                          ,start: start
+                          ,Config: Config
+                          ,App: App};
+   return _elm.StartApp.values;
+};
