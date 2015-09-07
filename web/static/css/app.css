@@ -78,3 +78,25 @@ form.link, form.button {
     border-bottom: 0;
   }
 }
+
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid black;
+  margin-bottom: 3px;
+}
+
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid black;
+  margin-top: 3px;
+}
+
+.left { float: left; }
+.item { clear: both; }
+
