@@ -146,31 +146,42 @@ find f xs =
 view : Signal.Address Action -> Model -> Html
 view address model =
   div
-    [ class "vote-wrapper" ]
+    [ class "vote-wrapper container" ]
     [ header
       [ id "entry-header" ]
       [ h1 [] [ text "Address & Feature voting!" ]]
-      , select
-          [ id "item-type"
-          , on "input" targetValue (Signal.message address << selectedItemType)
+      , div
+        [class "row"]
+        [ div
+          [ class "col-sm-4"]
+          [ select
+            [ id "item-type"
+            , class "form-control"
+            , on "input" targetValue (Signal.message address << selectedItemType)
+            ]
+            [ option [] [ text <| toString Address ]
+            , option [] [ text <| toString Feature ]
+            ]
           ]
-          [ option [] [ text <| toString Address ]
-          , option [] [ text <| toString Feature ]
+          , div
+            [ class "col-sm-8" ]
+            [ input
+              [ id "new-vote"
+              , class "form-control"
+              , placeholder "What's needed?"
+              , autofocus True
+              , value model.field
+              , name "newVote"
+              , on "input" targetValue (Signal.message address << NewItem)
+              , onEnter address CreateItem
+              ]
+              []
+            ]
           ]
-      , input
-          [ id "new-vote"
-          , placeholder "What's needed?"
-          , autofocus True
-          , value model.field
-          , name "newVote"
-          , on "input" targetValue (Signal.message address << NewItem)
-          , onEnter address CreateItem
-          ]
-          []
       , section
-        [ id "vote-list" ]
+        []
         [ ul
-          []
+          [ class "vote-list" ]
           (List.map
             (renderItem address)
             (List.sortBy
@@ -196,15 +207,15 @@ selectedItemType str =
 
 renderItem : Signal.Address Action -> Item -> Html
 renderItem address item =
-  div
+  li
     [ class "item" ]
-    [ div [ class "left" ] [ text (toString item.points) ]
+    [ div [ class "left points" ] [ text (toString item.points) ]
     , div
-        [ class "left" ]
+        [ class "left arrows" ]
         [ div [ class "arrow-up", onClick address (Upvote item.uid) ] []
         , div [ class "arrow-down", onClick address (Downvote item.uid) ] []
         ]
-    , div [ class "left" ] [ text <| item.description ++ "-" ++ (toString item.itemType)]
+    , div [ class "left desc" ] [ text item.description ]
     ]
 --li [] [ text item.description ]
 

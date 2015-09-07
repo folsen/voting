@@ -84,8 +84,8 @@ form.link, form.button {
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 10px solid black;
-  margin-bottom: 3px;
+  border-bottom: 10px solid #666;
+  margin-bottom: 5px;
 }
 
 .arrow-down {
@@ -93,10 +93,33 @@ form.link, form.button {
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 10px solid black;
-  margin-top: 3px;
+  border-top: 10px solid #666;
+  margin-top: 5px;
 }
 
 .left { float: left; }
 .item { clear: both; }
 
+.vote-wrapper {
+  text-align: center;
+}
+.vote-list {
+  list-style-type: none;
+}
+.item {
+  padding: 5px 0px;
+}
+.item .points {
+  color: #333;
+  font-size: 18px;
+  text-align: center;
+  width: 35px;
+}
+.item .arrows {
+  margin-right: 10px;
+  cursor: pointer;
+}
+.item .desc {
+  color: #333;
+  font-size: 16px;
+}

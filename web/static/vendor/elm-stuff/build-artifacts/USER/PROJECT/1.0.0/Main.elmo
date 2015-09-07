@@ -98,13 +98,13 @@ Elm.Main.make = function (_elm) {
    };
    var renderItem = F2(function (address,
    item) {
-      return A2($Html.div,
+      return A2($Html.li,
       _L.fromArray([$Html$Attributes.$class("item")]),
       _L.fromArray([A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("left")]),
+                   _L.fromArray([$Html$Attributes.$class("left points")]),
                    _L.fromArray([$Html.text($Basics.toString(item.points))]))
                    ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("left")]),
+                   _L.fromArray([$Html$Attributes.$class("left arrows")]),
                    _L.fromArray([A2($Html.div,
                                 _L.fromArray([$Html$Attributes.$class("arrow-up")
                                              ,A2($Html$Events.onClick,
@@ -118,12 +118,8 @@ Elm.Main.make = function (_elm) {
                                              Downvote(item.uid))]),
                                 _L.fromArray([]))]))
                    ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("left")]),
-                   _L.fromArray([$Html.text(A2($Basics._op["++"],
-                   item.description,
-                   A2($Basics._op["++"],
-                   "-",
-                   $Basics.toString(item.itemType))))]))]));
+                   _L.fromArray([$Html$Attributes.$class("left desc")]),
+                   _L.fromArray([$Html.text(item.description)]))]));
    });
    var CreateItem = {ctor: "CreateItem"};
    var NewItem = function (a) {
@@ -196,52 +192,60 @@ Elm.Main.make = function (_elm) {
             case "Ok":
             return ItemTypeSelected(_v6._0);}
          _U.badCase($moduleName,
-         "between lines 193 and 195");
+         "between lines 204 and 206");
       }();
    };
    var view = F2(function (address,
    model) {
       return A2($Html.div,
-      _L.fromArray([$Html$Attributes.$class("vote-wrapper")]),
+      _L.fromArray([$Html$Attributes.$class("vote-wrapper container")]),
       _L.fromArray([A2($Html.header,
                    _L.fromArray([$Html$Attributes.id("entry-header")]),
                    _L.fromArray([A2($Html.h1,
                    _L.fromArray([]),
                    _L.fromArray([$Html.text("Address & Feature voting!")]))]))
-                   ,A2($Html.select,
-                   _L.fromArray([$Html$Attributes.id("item-type")
-                                ,A3($Html$Events.on,
-                                "input",
-                                $Html$Events.targetValue,
-                                function ($) {
-                                   return $Signal.message(address)(selectedItemType($));
-                                })]),
-                   _L.fromArray([A2($Html.option,
-                                _L.fromArray([]),
-                                _L.fromArray([$Html.text($Basics.toString(Address))]))
-                                ,A2($Html.option,
-                                _L.fromArray([]),
-                                _L.fromArray([$Html.text($Basics.toString(Feature))]))]))
-                   ,A2($Html.input,
-                   _L.fromArray([$Html$Attributes.id("new-vote")
-                                ,$Html$Attributes.placeholder("What\'s needed?")
-                                ,$Html$Attributes.autofocus(true)
-                                ,$Html$Attributes.value(model.field)
-                                ,$Html$Attributes.name("newVote")
-                                ,A3($Html$Events.on,
-                                "input",
-                                $Html$Events.targetValue,
-                                function ($) {
-                                   return $Signal.message(address)(NewItem($));
-                                })
-                                ,A2(onEnter,
-                                address,
-                                CreateItem)]),
-                   _L.fromArray([]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("row")]),
+                   _L.fromArray([A2($Html.div,
+                                _L.fromArray([$Html$Attributes.$class("col-sm-4")]),
+                                _L.fromArray([A2($Html.select,
+                                _L.fromArray([$Html$Attributes.id("item-type")
+                                             ,$Html$Attributes.$class("form-control")
+                                             ,A3($Html$Events.on,
+                                             "input",
+                                             $Html$Events.targetValue,
+                                             function ($) {
+                                                return $Signal.message(address)(selectedItemType($));
+                                             })]),
+                                _L.fromArray([A2($Html.option,
+                                             _L.fromArray([]),
+                                             _L.fromArray([$Html.text($Basics.toString(Address))]))
+                                             ,A2($Html.option,
+                                             _L.fromArray([]),
+                                             _L.fromArray([$Html.text($Basics.toString(Feature))]))]))]))
+                                ,A2($Html.div,
+                                _L.fromArray([$Html$Attributes.$class("col-sm-8")]),
+                                _L.fromArray([A2($Html.input,
+                                _L.fromArray([$Html$Attributes.id("new-vote")
+                                             ,$Html$Attributes.$class("form-control")
+                                             ,$Html$Attributes.placeholder("What\'s needed?")
+                                             ,$Html$Attributes.autofocus(true)
+                                             ,$Html$Attributes.value(model.field)
+                                             ,$Html$Attributes.name("newVote")
+                                             ,A3($Html$Events.on,
+                                             "input",
+                                             $Html$Events.targetValue,
+                                             function ($) {
+                                                return $Signal.message(address)(NewItem($));
+                                             })
+                                             ,A2(onEnter,
+                                             address,
+                                             CreateItem)]),
+                                _L.fromArray([]))]))]))
                    ,A2($Html.section,
-                   _L.fromArray([$Html$Attributes.id("vote-list")]),
-                   _L.fromArray([A2($Html.ul,
                    _L.fromArray([]),
+                   _L.fromArray([A2($Html.ul,
+                   _L.fromArray([$Html$Attributes.$class("vote-list")]),
                    A2($List.map,
                    renderItem(address),
                    A2($List.sortBy,
