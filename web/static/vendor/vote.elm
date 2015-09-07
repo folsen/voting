@@ -241,7 +241,7 @@ initModel =
   )
 
 baseURI : String
-baseURI = "http://localhost:4000"
+baseURI = "https://ecm-voting.herokuapp.com"
 
 apiGetItems : Effects Action
 apiGetItems =
