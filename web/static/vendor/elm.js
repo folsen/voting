@@ -4598,535 +4598,28 @@ Elm.Main.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Effects = Elm.Effects.make(_elm),
    $Html = Elm.Html.make(_elm),
-   $Html$Attributes = Elm.Html.Attributes.make(_elm),
-   $Html$Events = Elm.Html.Events.make(_elm),
-   $Http = Elm.Http.make(_elm),
-   $Json$Decode = Elm.Json.Decode.make(_elm),
-   $Json$Encode = Elm.Json.Encode.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $StartApp = Elm.StartApp.make(_elm),
-   $String = Elm.String.make(_elm),
-   $Task = Elm.Task.make(_elm);
-   var putJson = F3(function (decoder,
-   url,
-   body) {
-      return $Http.fromJson(decoder)(A2($Http.send,
-      $Http.defaultSettings,
-      {_: {}
-      ,body: body
-      ,headers: _L.fromArray([{ctor: "_Tuple2"
-                              ,_0: "Content-Type"
-                              ,_1: "application/json"}])
-      ,url: url
-      ,verb: "PUT"}));
-   });
-   var postJson = F3(function (decoder,
-   url,
-   body) {
-      return $Http.fromJson(decoder)(A2($Http.send,
-      $Http.defaultSettings,
-      {_: {}
-      ,body: body
-      ,headers: _L.fromArray([{ctor: "_Tuple2"
-                              ,_0: "Content-Type"
-                              ,_1: "application/json"}])
-      ,url: url
-      ,verb: "POST"}));
-   });
-   var toJsonBody = F2(function (encoder,
-   x) {
-      return $Http.string(A2($Json$Encode.encode,
-      0,
-      encoder(x)));
-   });
-   var encodeItem = function (item) {
-      return $Json$Encode.object(_L.fromArray([{ctor: "_Tuple2"
-                                               ,_0: "item"
-                                               ,_1: $Json$Encode.object(_L.fromArray([{ctor: "_Tuple2"
-                                                                                      ,_0: "description"
-                                                                                      ,_1: $Json$Encode.string(item.description)}
-                                                                                     ,{ctor: "_Tuple2"
-                                                                                      ,_0: "item_type"
-                                                                                      ,_1: $Json$Encode.string($Basics.toString(item.itemType))}
-                                                                                     ,{ctor: "_Tuple2"
-                                                                                      ,_0: "points"
-                                                                                      ,_1: $Json$Encode.$int(item.points)}]))}]));
-   };
-   var is13 = function (code) {
-      return _U.eq(code,
-      13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");
-   };
-   var onEnter = F2(function (address,
-   value) {
-      return A3($Html$Events.on,
-      "keydown",
-      A2($Json$Decode.customDecoder,
-      $Html$Events.keyCode,
-      is13),
-      function (_v0) {
-         return function () {
-            return A2($Signal.message,
-            address,
-            value);
-         }();
-      });
-   });
-   var find = F2(function (f,xs) {
-      return function () {
-         var first = $List.take(1)(A2($List.filter,
-         f,
-         xs));
-         return function () {
-            switch (first.ctor)
-            {case "::":
-               switch (first._1.ctor)
-                 {case "[]":
-                    return $Maybe.Just(first._0);}
-                 break;
-               case "[]":
-               return $Maybe.Nothing;}
-            _U.badCase($moduleName,
-            "between lines 128 and 130");
-         }();
-      }();
-   });
-   var updateItems = F3(function (id,
-   items,
-   f) {
-      return function () {
-         var upd = function (i) {
-            return _U.eq(i.uid,
-            id) ? f(i) : i;
-         };
-         return A2($List.map,upd,items);
-      }();
-   });
-   var UpdateItems = function (a) {
-      return {ctor: "UpdateItems"
-             ,_0: a};
-   };
-   var ItemTypeSelected = function (a) {
-      return {ctor: "ItemTypeSelected"
-             ,_0: a};
-   };
-   var Downvote = function (a) {
-      return {ctor: "Downvote"
-             ,_0: a};
-   };
-   var Upvote = function (a) {
-      return {ctor: "Upvote"
-             ,_0: a};
-   };
-   var renderItem = F2(function (address,
-   item) {
-      return A2($Html.li,
-      _L.fromArray([$Html$Attributes.$class("item")]),
-      _L.fromArray([A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("left points")]),
-                   _L.fromArray([$Html.text($Basics.toString(item.points))]))
-                   ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("left arrows")]),
-                   _L.fromArray([A2($Html.div,
-                                _L.fromArray([$Html$Attributes.$class("arrow-up")
-                                             ,A2($Html$Events.onClick,
-                                             address,
-                                             Upvote(item.uid))]),
-                                _L.fromArray([]))
-                                ,A2($Html.div,
-                                _L.fromArray([$Html$Attributes.$class("arrow-down")
-                                             ,A2($Html$Events.onClick,
-                                             address,
-                                             Downvote(item.uid))]),
-                                _L.fromArray([]))]))
-                   ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("left desc")]),
-                   _L.fromArray([$Html.text(item.description)]))]));
-   });
-   var itemsToDisplay = F2(function (address,
-   model) {
-      return $List.map(renderItem(address))($List.sortBy(function (i) {
-         return 0 - i.points;
-      })($List.filter(function (i) {
-         return _U.eq(i.itemType,
-         model.selectedItemType);
-      })(model.items)));
-   });
-   var itemListView = F2(function (address,
-   model) {
-      return A2($Html.section,
-      _L.fromArray([]),
-      _L.fromArray([A2($Html.ul,
-      _L.fromArray([$Html$Attributes.$class("vote-list")]),
-      A2(itemsToDisplay,
-      address,
-      model))]));
-   });
-   var CreateItem = {ctor: "CreateItem"};
-   var NewItem = function (a) {
-      return {ctor: "NewItem"
-             ,_0: a};
-   };
-   var NoOp = {ctor: "NoOp"};
-   var Feature = {ctor: "Feature"};
-   var Address = {ctor: "Address"};
-   var strToItemType = function (str) {
-      return function () {
-         switch (str)
-         {case "Address":
-            return $Result.Ok(Address);
-            case "Feature":
-            return $Result.Ok(Feature);}
-         return $Result.Err(A2($Basics._op["++"],
-         "Unknown item type: ",
-         str));
-      }();
-   };
-   var selectedItemType = function (str) {
-      return function () {
-         var _v6 = strToItemType(str);
-         switch (_v6.ctor)
-         {case "Err":
-            return ItemTypeSelected(Address);
-            case "Ok":
-            return ItemTypeSelected(_v6._0);}
-         _U.badCase($moduleName,
-         "between lines 207 and 209");
-      }();
-   };
-   var inputAreaView = F2(function (address,
-   model) {
-      return A2($Html.header,
-      _L.fromArray([$Html$Attributes.id("entry-header")]),
-      _L.fromArray([A2($Html.h1,
-                   _L.fromArray([]),
-                   _L.fromArray([$Html.text("Address & Feature voting!")]))
-                   ,A2($Html.div,
-                   _L.fromArray([$Html$Attributes.$class("row")]),
-                   _L.fromArray([A2($Html.div,
-                                _L.fromArray([$Html$Attributes.$class("col-sm-4")]),
-                                _L.fromArray([A2($Html.select,
-                                _L.fromArray([$Html$Attributes.id("item-type")
-                                             ,$Html$Attributes.$class("form-control")
-                                             ,A3($Html$Events.on,
-                                             "input",
-                                             $Html$Events.targetValue,
-                                             function ($) {
-                                                return $Signal.message(address)(selectedItemType($));
-                                             })]),
-                                _L.fromArray([A2($Html.option,
-                                             _L.fromArray([]),
-                                             _L.fromArray([$Html.text($Basics.toString(Address))]))
-                                             ,A2($Html.option,
-                                             _L.fromArray([]),
-                                             _L.fromArray([$Html.text($Basics.toString(Feature))]))]))]))
-                                ,A2($Html.div,
-                                _L.fromArray([$Html$Attributes.$class("col-sm-8")]),
-                                _L.fromArray([A2($Html.input,
-                                _L.fromArray([$Html$Attributes.id("new-vote")
-                                             ,$Html$Attributes.$class("form-control")
-                                             ,$Html$Attributes.placeholder("What\'s needed?")
-                                             ,$Html$Attributes.autofocus(true)
-                                             ,$Html$Attributes.value(model.field)
-                                             ,$Html$Attributes.name("newVote")
-                                             ,A3($Html$Events.on,
-                                             "input",
-                                             $Html$Events.targetValue,
-                                             function ($) {
-                                                return $Signal.message(address)(NewItem($));
-                                             })
-                                             ,A2(onEnter,
-                                             address,
-                                             CreateItem)]),
-                                _L.fromArray([]))]))]))]));
-   });
-   var view = F2(function (address,
-   model) {
-      return A2($Html.div,
-      _L.fromArray([$Html$Attributes.$class("vote-wrapper container")]),
-      _L.fromArray([A2(inputAreaView,
-                   address,
-                   model)
-                   ,A2(itemListView,
-                   address,
-                   model)]));
-   });
-   var decodeItemType = A2($Json$Decode.customDecoder,
-   $Json$Decode.string,
-   strToItemType);
-   var Item = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,description: b
-             ,itemType: c
-             ,points: d
-             ,uid: a};
-   });
-   var decodeItem = A5($Json$Decode.object4,
-   Item,
-   A2($Json$Decode._op[":="],
-   "id",
-   $Json$Decode.$int),
-   A2($Json$Decode._op[":="],
-   "description",
-   $Json$Decode.string),
-   A2($Json$Decode._op[":="],
-   "item_type",
-   decodeItemType),
-   A2($Json$Decode._op[":="],
-   "points",
-   $Json$Decode.$int));
-   var itemList = A2($Json$Decode.at,
-   _L.fromArray(["data"]),
-   $Json$Decode.list(decodeItem));
-   var apiGetItems = function () {
-      var url = "/api/items";
-      return $Effects.task($Task.map(UpdateItems)($Task.toMaybe(A2($Http.get,
-      itemList,
-      url))));
-   }();
+   $Task = Elm.Task.make(_elm),
+   $Voting$Action = Elm.Voting.Action.make(_elm),
+   $Voting$Api = Elm.Voting.Api.make(_elm),
+   $Voting$Types = Elm.Voting.Types.make(_elm),
+   $Voting$View = Elm.Voting.View.make(_elm);
    var initModel = {ctor: "_Tuple2"
-                   ,_0: {_: {}
-                        ,field: ""
-                        ,items: _L.fromArray([])
-                        ,selectedItemType: Address
-                        ,uid: 0}
-                   ,_1: apiGetItems};
-   var apiPostItem = function (item) {
-      return function () {
-         var url = "/api/items";
-         return $Effects.task($Task.map(function (_v9) {
-            return function () {
-               return NoOp;
-            }();
-         })($Task.toMaybe(A3(postJson,
-         decodeItem,
-         url,
-         A2(toJsonBody,
-         encodeItem,
-         item)))));
-      }();
-   };
-   var apiPutItem = function (item) {
-      return function () {
-         var url = A2($Basics._op["++"],
-         "/api/items/",
-         $Basics.toString(item.uid));
-         return $Effects.task($Task.map(function (_v11) {
-            return function () {
-               return NoOp;
-            }();
-         })($Task.toMaybe(A3(putJson,
-         decodeItem,
-         url,
-         A2(toJsonBody,
-         encodeItem,
-         item)))));
-      }();
-   };
-   var updateItem = F3(function (id,
-   items,
-   f) {
-      return function () {
-         var _v13 = A2(find,
-         function (i) {
-            return _U.eq(i.uid,id);
-         },
-         items);
-         switch (_v13.ctor)
-         {case "Just":
-            return apiPutItem(f(_v13._0));
-            case "Nothing":
-            return $Effects.none;}
-         _U.badCase($moduleName,
-         "between lines 114 and 116");
-      }();
-   });
-   var upvote = F2(function (id,
-   items) {
-      return function () {
-         var upd = function (i) {
-            return _U.replace([["points"
-                               ,i.points + 1]],
-            i);
-         };
-         return {ctor: "_Tuple2"
-                ,_0: A3(updateItems,
-                id,
-                items,
-                upd)
-                ,_1: A3(updateItem,
-                id,
-                items,
-                upd)};
-      }();
-   });
-   var downvote = F2(function (id,
-   items) {
-      return function () {
-         var upd = function (i) {
-            return _U.replace([["points"
-                               ,i.points - 1]],
-            i);
-         };
-         return {ctor: "_Tuple2"
-                ,_0: A3(updateItems,
-                id,
-                items,
-                upd)
-                ,_1: A3(updateItem,
-                id,
-                items,
-                upd)};
-      }();
-   });
-   var update = F2(function (action,
-   model) {
-      return function () {
-         switch (action.ctor)
-         {case "CreateItem":
-            return function () {
-                 var newItem = A4(Item,
-                 model.uid,
-                 model.field,
-                 model.selectedItemType,
-                 0);
-                 return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["uid"
-                                         ,model.uid + 1]
-                                        ,["field",""]
-                                        ,["items"
-                                         ,$String.isEmpty(model.field) ? model.items : A2($Basics._op["++"],
-                                         model.items,
-                                         _L.fromArray([newItem]))]],
-                        model)
-                        ,_1: apiPostItem(newItem)};
-              }();
-            case "Downvote":
-            return function () {
-                 var $ = A2(downvote,
-                 action._0,
-                 model.items),
-                 newItems = $._0,
-                 effect = $._1;
-                 return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["items"
-                                         ,newItems]],
-                        model)
-                        ,_1: effect};
-              }();
-            case "ItemTypeSelected":
-            return {ctor: "_Tuple2"
-                   ,_0: _U.replace([["selectedItemType"
-                                    ,action._0]],
-                   model)
-                   ,_1: $Effects.none};
-            case "NewItem":
-            return {ctor: "_Tuple2"
-                   ,_0: _U.replace([["field"
-                                    ,action._0]],
-                   model)
-                   ,_1: $Effects.none};
-            case "NoOp":
-            return {ctor: "_Tuple2"
-                   ,_0: model
-                   ,_1: $Effects.none};
-            case "UpdateItems":
-            return function () {
-                 var allItems = A2($Maybe.withDefault,
-                 _L.fromArray([A4(Item,
-                 0,
-                 "can\'t parse server response",
-                 Address,
-                 0)]),
-                 action._0);
-                 return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["uid"
-                                         ,$Maybe.withDefault(model.uid)($List.maximum(A2($List.map,
-                                         function (i) {
-                                            return i.uid;
-                                         },
-                                         allItems)))]
-                                        ,["items",allItems]],
-                        model)
-                        ,_1: $Effects.none};
-              }();
-            case "Upvote":
-            return function () {
-                 var $ = A2(upvote,
-                 action._0,
-                 model.items),
-                 newItems = $._0,
-                 effect = $._1;
-                 return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["items"
-                                         ,newItems]],
-                        model)
-                        ,_1: effect};
-              }();}
-         _U.badCase($moduleName,
-         "between lines 59 and 94");
-      }();
-   });
+                   ,_0: $Voting$Types.emptyModel
+                   ,_1: $Voting$Api.apiGetItems};
    var app = $StartApp.start({_: {}
                              ,init: initModel
                              ,inputs: _L.fromArray([])
-                             ,update: update
-                             ,view: view});
+                             ,update: $Voting$Action.update
+                             ,view: $Voting$View.view});
    var tasks = Elm.Native.Task.make(_elm).performSignal("tasks",
    app.tasks);
    var main = app.html;
-   var Model = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,field: b
-             ,items: a
-             ,selectedItemType: c
-             ,uid: d};
-   });
    _elm.Main.values = {_op: _op
-                      ,Model: Model
-                      ,Item: Item
-                      ,Address: Address
-                      ,Feature: Feature
-                      ,NoOp: NoOp
-                      ,NewItem: NewItem
-                      ,CreateItem: CreateItem
-                      ,Upvote: Upvote
-                      ,Downvote: Downvote
-                      ,ItemTypeSelected: ItemTypeSelected
-                      ,UpdateItems: UpdateItems
-                      ,update: update
-                      ,upvote: upvote
-                      ,downvote: downvote
-                      ,updateItem: updateItem
-                      ,updateItems: updateItems
-                      ,find: find
-                      ,view: view
-                      ,inputAreaView: inputAreaView
-                      ,itemListView: itemListView
-                      ,itemsToDisplay: itemsToDisplay
-                      ,selectedItemType: selectedItemType
-                      ,renderItem: renderItem
-                      ,onEnter: onEnter
-                      ,is13: is13
-                      ,decodeItemType: decodeItemType
-                      ,encodeItem: encodeItem
-                      ,decodeItem: decodeItem
-                      ,toJsonBody: toJsonBody
-                      ,itemList: itemList
-                      ,strToItemType: strToItemType
-                      ,apiGetItems: apiGetItems
-                      ,apiPostItem: apiPostItem
-                      ,apiPutItem: apiPutItem
-                      ,postJson: postJson
-                      ,putJson: putJson
                       ,initModel: initModel
                       ,app: app
                       ,main: main};
@@ -14244,4 +13737,645 @@ Elm.VirtualDom.make = function (_elm) {
                             ,lazy3: lazy3
                             ,Options: Options};
    return _elm.VirtualDom.values;
+};
+Elm.Voting = Elm.Voting || {};
+Elm.Voting.Action = Elm.Voting.Action || {};
+Elm.Voting.Action.make = function (_elm) {
+   "use strict";
+   _elm.Voting = _elm.Voting || {};
+   _elm.Voting.Action = _elm.Voting.Action || {};
+   if (_elm.Voting.Action.values)
+   return _elm.Voting.Action.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Voting.Action",
+   $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Voting$Api = Elm.Voting.Api.make(_elm),
+   $Voting$Types = Elm.Voting.Types.make(_elm);
+   var find = F2(function (f,xs) {
+      return function () {
+         var first = $List.take(1)(A2($List.filter,
+         f,
+         xs));
+         return function () {
+            switch (first.ctor)
+            {case "::":
+               switch (first._1.ctor)
+                 {case "[]":
+                    return $Maybe.Just(first._0);}
+                 break;
+               case "[]":
+               return $Maybe.Nothing;}
+            _U.badCase($moduleName,
+            "between lines 90 and 92");
+         }();
+      }();
+   });
+   var updateItems = F3(function (id,
+   items,
+   f) {
+      return function () {
+         var upd = function (i) {
+            return _U.eq(i.uid,
+            id) ? f(i) : i;
+         };
+         return A2($List.map,upd,items);
+      }();
+   });
+   var updateItem = F3(function (id,
+   items,
+   f) {
+      return function () {
+         var _v3 = A2(find,
+         function (i) {
+            return _U.eq(i.uid,id);
+         },
+         items);
+         switch (_v3.ctor)
+         {case "Just":
+            return $Voting$Api.apiPutItem(f(_v3._0));
+            case "Nothing":
+            return $Effects.none;}
+         _U.badCase($moduleName,
+         "between lines 76 and 78");
+      }();
+   });
+   var downvote = F2(function (id,
+   items) {
+      return function () {
+         var upd = function (i) {
+            return _U.replace([["points"
+                               ,i.points - 1]],
+            i);
+         };
+         return {ctor: "_Tuple2"
+                ,_0: A3(updateItems,
+                id,
+                items,
+                upd)
+                ,_1: A3(updateItem,
+                id,
+                items,
+                upd)};
+      }();
+   });
+   var upvote = F2(function (id,
+   items) {
+      return function () {
+         var upd = function (i) {
+            return _U.replace([["points"
+                               ,i.points + 1]],
+            i);
+         };
+         return {ctor: "_Tuple2"
+                ,_0: A3(updateItems,
+                id,
+                items,
+                upd)
+                ,_1: A3(updateItem,
+                id,
+                items,
+                upd)};
+      }();
+   });
+   var update = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "CreateItem":
+            return function () {
+                 var newItem = {_: {}
+                               ,description: model.field
+                               ,itemType: model.selectedItemType
+                               ,points: 0
+                               ,uid: 0};
+                 return {ctor: "_Tuple2"
+                        ,_0: _U.replace([["field",""]],
+                        model)
+                        ,_1: $Voting$Api.apiPostItem(newItem)};
+              }();
+            case "Downvote":
+            return function () {
+                 var $ = A2(downvote,
+                 action._0,
+                 model.items),
+                 newItems = $._0,
+                 effect = $._1;
+                 return {ctor: "_Tuple2"
+                        ,_0: _U.replace([["items"
+                                         ,newItems]],
+                        model)
+                        ,_1: effect};
+              }();
+            case "InsertItem":
+            return function () {
+                 var newItem = A2($Maybe.withDefault,
+                 A4($Voting$Types.Item,
+                 0,
+                 "Error creating item",
+                 model.selectedItemType,
+                 0),
+                 action._0);
+                 return {ctor: "_Tuple2"
+                        ,_0: _U.replace([["items"
+                                         ,A2($Basics._op["++"],
+                                         model.items,
+                                         _L.fromArray([newItem]))]],
+                        model)
+                        ,_1: $Effects.none};
+              }();
+            case "ItemTypeSelected":
+            return {ctor: "_Tuple2"
+                   ,_0: _U.replace([["selectedItemType"
+                                    ,action._0]],
+                   model)
+                   ,_1: $Effects.none};
+            case "NewItem":
+            return {ctor: "_Tuple2"
+                   ,_0: _U.replace([["field"
+                                    ,action._0]],
+                   model)
+                   ,_1: $Effects.none};
+            case "NoOp":
+            return {ctor: "_Tuple2"
+                   ,_0: model
+                   ,_1: $Effects.none};
+            case "UpdateItems":
+            return function () {
+                 var allItems = A2($Maybe.withDefault,
+                 _L.fromArray([A4($Voting$Types.Item,
+                 0,
+                 "can\'t parse server response",
+                 $Voting$Types.Address,
+                 0)]),
+                 action._0);
+                 return {ctor: "_Tuple2"
+                        ,_0: _U.replace([["items"
+                                         ,allItems]],
+                        model)
+                        ,_1: $Effects.none};
+              }();
+            case "Upvote":
+            return function () {
+                 var $ = A2(upvote,
+                 action._0,
+                 model.items),
+                 newItems = $._0,
+                 effect = $._1;
+                 return {ctor: "_Tuple2"
+                        ,_0: _U.replace([["items"
+                                         ,newItems]],
+                        model)
+                        ,_1: effect};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 17 and 56");
+      }();
+   });
+   _elm.Voting.Action.values = {_op: _op
+                               ,update: update
+                               ,upvote: upvote
+                               ,downvote: downvote
+                               ,updateItem: updateItem
+                               ,updateItems: updateItems
+                               ,find: find};
+   return _elm.Voting.Action.values;
+};
+Elm.Voting = Elm.Voting || {};
+Elm.Voting.Api = Elm.Voting.Api || {};
+Elm.Voting.Api.make = function (_elm) {
+   "use strict";
+   _elm.Voting = _elm.Voting || {};
+   _elm.Voting.Api = _elm.Voting.Api || {};
+   if (_elm.Voting.Api.values)
+   return _elm.Voting.Api.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Voting.Api",
+   $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm),
+   $Voting$Json = Elm.Voting.Json.make(_elm),
+   $Voting$Types = Elm.Voting.Types.make(_elm);
+   var putJson = F3(function (decoder,
+   url,
+   body) {
+      return $Http.fromJson(decoder)(A2($Http.send,
+      $Http.defaultSettings,
+      {_: {}
+      ,body: body
+      ,headers: _L.fromArray([{ctor: "_Tuple2"
+                              ,_0: "Content-Type"
+                              ,_1: "application/json"}])
+      ,url: url
+      ,verb: "PUT"}));
+   });
+   var postJson = F3(function (decoder,
+   url,
+   body) {
+      return $Http.fromJson(decoder)(A2($Http.send,
+      $Http.defaultSettings,
+      {_: {}
+      ,body: body
+      ,headers: _L.fromArray([{ctor: "_Tuple2"
+                              ,_0: "Content-Type"
+                              ,_1: "application/json"}])
+      ,url: url
+      ,verb: "POST"}));
+   });
+   var apiPutItem = function (item) {
+      return function () {
+         var url = A2($Basics._op["++"],
+         "/api/items/",
+         $Basics.toString(item.uid));
+         return $Effects.task($Task.map(function (_v0) {
+            return function () {
+               return $Voting$Types.NoOp;
+            }();
+         })($Task.toMaybe(A3(putJson,
+         $Voting$Json.singleItem,
+         url,
+         A2($Voting$Json.toJsonBody,
+         $Voting$Json.encodeItem,
+         item)))));
+      }();
+   };
+   var apiPostItem = function (item) {
+      return function () {
+         var url = "/api/items";
+         return $Effects.task($Task.map(function (mi) {
+            return $Voting$Types.InsertItem(mi);
+         })($Task.toMaybe(A3(postJson,
+         $Voting$Json.singleItem,
+         url,
+         A2($Voting$Json.toJsonBody,
+         $Voting$Json.encodeItem,
+         item)))));
+      }();
+   };
+   var apiGetItems = function () {
+      var url = "/api/items";
+      return $Effects.task($Task.map($Voting$Types.UpdateItems)($Task.toMaybe(A2($Http.get,
+      $Voting$Json.itemList,
+      url))));
+   }();
+   _elm.Voting.Api.values = {_op: _op
+                            ,apiGetItems: apiGetItems
+                            ,apiPostItem: apiPostItem
+                            ,apiPutItem: apiPutItem
+                            ,postJson: postJson
+                            ,putJson: putJson};
+   return _elm.Voting.Api.values;
+};
+Elm.Voting = Elm.Voting || {};
+Elm.Voting.Json = Elm.Voting.Json || {};
+Elm.Voting.Json.make = function (_elm) {
+   "use strict";
+   _elm.Voting = _elm.Voting || {};
+   _elm.Voting.Json = _elm.Voting.Json || {};
+   if (_elm.Voting.Json.values)
+   return _elm.Voting.Json.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Voting.Json",
+   $Basics = Elm.Basics.make(_elm),
+   $Http = Elm.Http.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $Json$Encode = Elm.Json.Encode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Voting$Types = Elm.Voting.Types.make(_elm);
+   var strToItemType = function (str) {
+      return function () {
+         switch (str)
+         {case "Address":
+            return $Result.Ok($Voting$Types.Address);
+            case "Feature":
+            return $Result.Ok($Voting$Types.Feature);}
+         return $Result.Err(A2($Basics._op["++"],
+         "Unknown item type: ",
+         str));
+      }();
+   };
+   var toJsonBody = F2(function (encoder,
+   x) {
+      return $Http.string(A2($Json$Encode.encode,
+      0,
+      encoder(x)));
+   });
+   var encodeItem = function (item) {
+      return $Json$Encode.object(_L.fromArray([{ctor: "_Tuple2"
+                                               ,_0: "item"
+                                               ,_1: $Json$Encode.object(_L.fromArray([{ctor: "_Tuple2"
+                                                                                      ,_0: "description"
+                                                                                      ,_1: $Json$Encode.string(item.description)}
+                                                                                     ,{ctor: "_Tuple2"
+                                                                                      ,_0: "item_type"
+                                                                                      ,_1: $Json$Encode.string($Basics.toString(item.itemType))}
+                                                                                     ,{ctor: "_Tuple2"
+                                                                                      ,_0: "points"
+                                                                                      ,_1: $Json$Encode.$int(item.points)}]))}]));
+   };
+   var decodeItemType = A2($Json$Decode.customDecoder,
+   $Json$Decode.string,
+   strToItemType);
+   var decodeItem = A5($Json$Decode.object4,
+   $Voting$Types.Item,
+   A2($Json$Decode._op[":="],
+   "id",
+   $Json$Decode.$int),
+   A2($Json$Decode._op[":="],
+   "description",
+   $Json$Decode.string),
+   A2($Json$Decode._op[":="],
+   "item_type",
+   decodeItemType),
+   A2($Json$Decode._op[":="],
+   "points",
+   $Json$Decode.$int));
+   var itemList = A2($Json$Decode.at,
+   _L.fromArray(["data"]),
+   $Json$Decode.list(decodeItem));
+   var singleItem = A2($Json$Decode.at,
+   _L.fromArray(["data"]),
+   decodeItem);
+   _elm.Voting.Json.values = {_op: _op
+                             ,decodeItemType: decodeItemType
+                             ,encodeItem: encodeItem
+                             ,decodeItem: decodeItem
+                             ,toJsonBody: toJsonBody
+                             ,itemList: itemList
+                             ,singleItem: singleItem
+                             ,strToItemType: strToItemType};
+   return _elm.Voting.Json.values;
+};
+Elm.Voting = Elm.Voting || {};
+Elm.Voting.Types = Elm.Voting.Types || {};
+Elm.Voting.Types.make = function (_elm) {
+   "use strict";
+   _elm.Voting = _elm.Voting || {};
+   _elm.Voting.Types = _elm.Voting.Types || {};
+   if (_elm.Voting.Types.values)
+   return _elm.Voting.Types.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Voting.Types",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var UpdateItems = function (a) {
+      return {ctor: "UpdateItems"
+             ,_0: a};
+   };
+   var ItemTypeSelected = function (a) {
+      return {ctor: "ItemTypeSelected"
+             ,_0: a};
+   };
+   var Downvote = function (a) {
+      return {ctor: "Downvote"
+             ,_0: a};
+   };
+   var Upvote = function (a) {
+      return {ctor: "Upvote"
+             ,_0: a};
+   };
+   var InsertItem = function (a) {
+      return {ctor: "InsertItem"
+             ,_0: a};
+   };
+   var CreateItem = {ctor: "CreateItem"};
+   var NewItem = function (a) {
+      return {ctor: "NewItem"
+             ,_0: a};
+   };
+   var NoOp = {ctor: "NoOp"};
+   var Feature = {ctor: "Feature"};
+   var Address = {ctor: "Address"};
+   var Item = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,description: b
+             ,itemType: c
+             ,points: d
+             ,uid: a};
+   });
+   var emptyModel = {_: {}
+                    ,field: ""
+                    ,items: _L.fromArray([])
+                    ,selectedItemType: Address};
+   var Model = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,field: b
+             ,items: a
+             ,selectedItemType: c};
+   });
+   _elm.Voting.Types.values = {_op: _op
+                              ,Model: Model
+                              ,emptyModel: emptyModel
+                              ,Item: Item
+                              ,Address: Address
+                              ,Feature: Feature
+                              ,NoOp: NoOp
+                              ,NewItem: NewItem
+                              ,CreateItem: CreateItem
+                              ,InsertItem: InsertItem
+                              ,Upvote: Upvote
+                              ,Downvote: Downvote
+                              ,ItemTypeSelected: ItemTypeSelected
+                              ,UpdateItems: UpdateItems};
+   return _elm.Voting.Types.values;
+};
+Elm.Voting = Elm.Voting || {};
+Elm.Voting.View = Elm.Voting.View || {};
+Elm.Voting.View.make = function (_elm) {
+   "use strict";
+   _elm.Voting = _elm.Voting || {};
+   _elm.Voting.View = _elm.Voting.View || {};
+   if (_elm.Voting.View.values)
+   return _elm.Voting.View.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Voting.View",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Voting$Json = Elm.Voting.Json.make(_elm),
+   $Voting$Types = Elm.Voting.Types.make(_elm);
+   var is13 = function (code) {
+      return _U.eq(code,
+      13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");
+   };
+   var onEnter = F2(function (address,
+   value) {
+      return A3($Html$Events.on,
+      "keydown",
+      A2($Json$Decode.customDecoder,
+      $Html$Events.keyCode,
+      is13),
+      function (_v0) {
+         return function () {
+            return A2($Signal.message,
+            address,
+            value);
+         }();
+      });
+   });
+   var renderItem = F2(function (address,
+   item) {
+      return A2($Html.li,
+      _L.fromArray([$Html$Attributes.$class("item")]),
+      _L.fromArray([A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("left points")]),
+                   _L.fromArray([$Html.text($Basics.toString(item.points))]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("left arrows")]),
+                   _L.fromArray([A2($Html.div,
+                                _L.fromArray([$Html$Attributes.$class("arrow-up")
+                                             ,A2($Html$Events.onClick,
+                                             address,
+                                             $Voting$Types.Upvote(item.uid))]),
+                                _L.fromArray([]))
+                                ,A2($Html.div,
+                                _L.fromArray([$Html$Attributes.$class("arrow-down")
+                                             ,A2($Html$Events.onClick,
+                                             address,
+                                             $Voting$Types.Downvote(item.uid))]),
+                                _L.fromArray([]))]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("left desc")]),
+                   _L.fromArray([$Html.text(item.description)]))]));
+   });
+   var selectedItemType = function (str) {
+      return function () {
+         var _v2 = $Voting$Json.strToItemType(str);
+         switch (_v2.ctor)
+         {case "Err":
+            return $Voting$Types.ItemTypeSelected($Voting$Types.Address);
+            case "Ok":
+            return $Voting$Types.ItemTypeSelected(_v2._0);}
+         _U.badCase($moduleName,
+         "between lines 86 and 88");
+      }();
+   };
+   var itemsToDisplay = F2(function (address,
+   model) {
+      return $List.map(renderItem(address))($List.sortBy(function (i) {
+         return 0 - i.points;
+      })($List.filter(function (i) {
+         return _U.eq(i.itemType,
+         model.selectedItemType);
+      })(model.items)));
+   });
+   var itemListView = F2(function (address,
+   model) {
+      return A2($Html.section,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.ul,
+      _L.fromArray([$Html$Attributes.$class("vote-list")]),
+      A2(itemsToDisplay,
+      address,
+      model))]));
+   });
+   var inputAreaView = F2(function (address,
+   model) {
+      return A2($Html.header,
+      _L.fromArray([$Html$Attributes.id("entry-header")]),
+      _L.fromArray([A2($Html.h1,
+                   _L.fromArray([]),
+                   _L.fromArray([$Html.text("Address & Feature voting!")]))
+                   ,A2($Html.div,
+                   _L.fromArray([$Html$Attributes.$class("row")]),
+                   _L.fromArray([A2($Html.div,
+                                _L.fromArray([$Html$Attributes.$class("col-sm-4")]),
+                                _L.fromArray([A2($Html.select,
+                                _L.fromArray([$Html$Attributes.id("item-type")
+                                             ,$Html$Attributes.$class("form-control")
+                                             ,A3($Html$Events.on,
+                                             "input",
+                                             $Html$Events.targetValue,
+                                             function ($) {
+                                                return $Signal.message(address)(selectedItemType($));
+                                             })]),
+                                _L.fromArray([A2($Html.option,
+                                             _L.fromArray([]),
+                                             _L.fromArray([$Html.text($Basics.toString($Voting$Types.Address))]))
+                                             ,A2($Html.option,
+                                             _L.fromArray([]),
+                                             _L.fromArray([$Html.text($Basics.toString($Voting$Types.Feature))]))]))]))
+                                ,A2($Html.div,
+                                _L.fromArray([$Html$Attributes.$class("col-sm-8")]),
+                                _L.fromArray([A2($Html.input,
+                                _L.fromArray([$Html$Attributes.id("new-vote")
+                                             ,$Html$Attributes.$class("form-control")
+                                             ,$Html$Attributes.placeholder("What\'s needed?")
+                                             ,$Html$Attributes.autofocus(true)
+                                             ,$Html$Attributes.value(model.field)
+                                             ,$Html$Attributes.name("newVote")
+                                             ,A3($Html$Events.on,
+                                             "input",
+                                             $Html$Events.targetValue,
+                                             function ($) {
+                                                return $Signal.message(address)($Voting$Types.NewItem($));
+                                             })
+                                             ,A2(onEnter,
+                                             address,
+                                             $Voting$Types.CreateItem)]),
+                                _L.fromArray([]))]))]))]));
+   });
+   var view = F2(function (address,
+   model) {
+      return A2($Html.div,
+      _L.fromArray([$Html$Attributes.$class("vote-wrapper container")]),
+      _L.fromArray([A2(inputAreaView,
+                   address,
+                   model)
+                   ,A2(itemListView,
+                   address,
+                   model)]));
+   });
+   _elm.Voting.View.values = {_op: _op
+                             ,view: view
+                             ,inputAreaView: inputAreaView
+                             ,itemListView: itemListView
+                             ,itemsToDisplay: itemsToDisplay
+                             ,selectedItemType: selectedItemType
+                             ,renderItem: renderItem
+                             ,onEnter: onEnter
+                             ,is13: is13};
+   return _elm.Voting.View.values;
 };
