@@ -22,3 +22,7 @@ erl_crash.dump
 # secrets file as long as you replace its contents by environment
 # variables.
 /config/prod.secret.exs
+
+# Probably not the best place to host the elm stuff
+# but we don't want it included in git
+web/static/vendor/elm-stuff/*

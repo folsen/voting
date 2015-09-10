@@ -4610,13 +4610,51 @@ Elm.Main.make = function (_elm) {
    $StartApp = Elm.StartApp.make(_elm),
    $String = Elm.String.make(_elm),
    $Task = Elm.Task.make(_elm);
+   var putJson = F3(function (decoder,
+   url,
+   body) {
+      return $Http.fromJson(decoder)(A2($Http.send,
+      $Http.defaultSettings,
+      {_: {}
+      ,body: body
+      ,headers: _L.fromArray([{ctor: "_Tuple2"
+                              ,_0: "Content-Type"
+                              ,_1: "application/json"}])
+      ,url: url
+      ,verb: "PUT"}));
+   });
+   var postJson = F3(function (decoder,
+   url,
+   body) {
+      return $Http.fromJson(decoder)(A2($Http.send,
+      $Http.defaultSettings,
+      {_: {}
+      ,body: body
+      ,headers: _L.fromArray([{ctor: "_Tuple2"
+                              ,_0: "Content-Type"
+                              ,_1: "application/json"}])
+      ,url: url
+      ,verb: "POST"}));
+   });
    var toJsonBody = F2(function (encoder,
    x) {
       return $Http.string(A2($Json$Encode.encode,
       0,
       encoder(x)));
    });
-   var baseURI = "https://ecm-voting.herokuapp.com";
+   var encodeItem = function (item) {
+      return $Json$Encode.object(_L.fromArray([{ctor: "_Tuple2"
+                                               ,_0: "item"
+                                               ,_1: $Json$Encode.object(_L.fromArray([{ctor: "_Tuple2"
+                                                                                      ,_0: "description"
+                                                                                      ,_1: $Json$Encode.string(item.description)}
+                                                                                     ,{ctor: "_Tuple2"
+                                                                                      ,_0: "item_type"
+                                                                                      ,_1: $Json$Encode.string($Basics.toString(item.itemType))}
+                                                                                     ,{ctor: "_Tuple2"
+                                                                                      ,_0: "points"
+                                                                                      ,_1: $Json$Encode.$int(item.points)}]))}]));
+   };
    var is13 = function (code) {
       return _U.eq(code,
       13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");
@@ -4651,7 +4689,7 @@ Elm.Main.make = function (_elm) {
                case "[]":
                return $Maybe.Nothing;}
             _U.badCase($moduleName,
-            "between lines 142 and 144");
+            "between lines 128 and 130");
          }();
       }();
    });
@@ -4707,51 +4745,31 @@ Elm.Main.make = function (_elm) {
                    _L.fromArray([$Html$Attributes.$class("left desc")]),
                    _L.fromArray([$Html.text(item.description)]))]));
    });
+   var itemsToDisplay = F2(function (address,
+   model) {
+      return $List.map(renderItem(address))($List.sortBy(function (i) {
+         return 0 - i.points;
+      })($List.filter(function (i) {
+         return _U.eq(i.itemType,
+         model.selectedItemType);
+      })(model.items)));
+   });
+   var itemListView = F2(function (address,
+   model) {
+      return A2($Html.section,
+      _L.fromArray([]),
+      _L.fromArray([A2($Html.ul,
+      _L.fromArray([$Html$Attributes.$class("vote-list")]),
+      A2(itemsToDisplay,
+      address,
+      model))]));
+   });
    var CreateItem = {ctor: "CreateItem"};
    var NewItem = function (a) {
       return {ctor: "NewItem"
              ,_0: a};
    };
    var NoOp = {ctor: "NoOp"};
-   var putJson = F3(function (decoder,
-   url,
-   body) {
-      return $Http.fromJson(decoder)(A2($Http.send,
-      $Http.defaultSettings,
-      {_: {}
-      ,body: body
-      ,headers: _L.fromArray([{ctor: "_Tuple2"
-                              ,_0: "Content-Type"
-                              ,_1: "application/json"}])
-      ,url: url
-      ,verb: "PUT"}));
-   });
-   var postJson = F3(function (decoder,
-   url,
-   body) {
-      return $Http.fromJson(decoder)(A2($Http.send,
-      $Http.defaultSettings,
-      {_: {}
-      ,body: body
-      ,headers: _L.fromArray([{ctor: "_Tuple2"
-                              ,_0: "Content-Type"
-                              ,_1: "application/json"}])
-      ,url: url
-      ,verb: "POST"}));
-   });
-   var encodeItem = function (item) {
-      return $Json$Encode.object(_L.fromArray([{ctor: "_Tuple2"
-                                               ,_0: "item"
-                                               ,_1: $Json$Encode.object(_L.fromArray([{ctor: "_Tuple2"
-                                                                                      ,_0: "description"
-                                                                                      ,_1: $Json$Encode.string(item.description)}
-                                                                                     ,{ctor: "_Tuple2"
-                                                                                      ,_0: "item_type"
-                                                                                      ,_1: $Json$Encode.string($Basics.toString(item.itemType))}
-                                                                                     ,{ctor: "_Tuple2"
-                                                                                      ,_0: "points"
-                                                                                      ,_1: $Json$Encode.$int(item.points)}]))}]));
-   };
    var Feature = {ctor: "Feature"};
    var Address = {ctor: "Address"};
    var strToItemType = function (str) {
@@ -4766,9 +4784,6 @@ Elm.Main.make = function (_elm) {
          str));
       }();
    };
-   var decodeItemType = A2($Json$Decode.customDecoder,
-   $Json$Decode.string,
-   strToItemType);
    var selectedItemType = function (str) {
       return function () {
          var _v6 = strToItemType(str);
@@ -4778,18 +4793,16 @@ Elm.Main.make = function (_elm) {
             case "Ok":
             return ItemTypeSelected(_v6._0);}
          _U.badCase($moduleName,
-         "between lines 204 and 206");
+         "between lines 207 and 209");
       }();
    };
-   var view = F2(function (address,
+   var inputAreaView = F2(function (address,
    model) {
-      return A2($Html.div,
-      _L.fromArray([$Html$Attributes.$class("vote-wrapper container")]),
-      _L.fromArray([A2($Html.header,
-                   _L.fromArray([$Html$Attributes.id("entry-header")]),
-                   _L.fromArray([A2($Html.h1,
+      return A2($Html.header,
+      _L.fromArray([$Html$Attributes.id("entry-header")]),
+      _L.fromArray([A2($Html.h1,
                    _L.fromArray([]),
-                   _L.fromArray([$Html.text("Address & Feature voting!")]))]))
+                   _L.fromArray([$Html.text("Address & Feature voting!")]))
                    ,A2($Html.div,
                    _L.fromArray([$Html$Attributes.$class("row")]),
                    _L.fromArray([A2($Html.div,
@@ -4827,24 +4840,22 @@ Elm.Main.make = function (_elm) {
                                              ,A2(onEnter,
                                              address,
                                              CreateItem)]),
-                                _L.fromArray([]))]))]))
-                   ,A2($Html.section,
-                   _L.fromArray([]),
-                   _L.fromArray([A2($Html.ul,
-                   _L.fromArray([$Html$Attributes.$class("vote-list")]),
-                   A2($List.map,
-                   renderItem(address),
-                   A2($List.sortBy,
-                   function (i) {
-                      return 0 - i.points;
-                   },
-                   A2($List.filter,
-                   function (i) {
-                      return _U.eq(i.itemType,
-                      model.selectedItemType);
-                   },
-                   model.items))))]))]));
+                                _L.fromArray([]))]))]))]));
    });
+   var view = F2(function (address,
+   model) {
+      return A2($Html.div,
+      _L.fromArray([$Html$Attributes.$class("vote-wrapper container")]),
+      _L.fromArray([A2(inputAreaView,
+                   address,
+                   model)
+                   ,A2(itemListView,
+                   address,
+                   model)]));
+   });
+   var decodeItemType = A2($Json$Decode.customDecoder,
+   $Json$Decode.string,
+   strToItemType);
    var Item = F4(function (a,
    b,
    c,
@@ -4869,11 +4880,25 @@ Elm.Main.make = function (_elm) {
    A2($Json$Decode._op[":="],
    "points",
    $Json$Decode.$int));
+   var itemList = A2($Json$Decode.at,
+   _L.fromArray(["data"]),
+   $Json$Decode.list(decodeItem));
+   var apiGetItems = function () {
+      var url = "/api/items";
+      return $Effects.task($Task.map(UpdateItems)($Task.toMaybe(A2($Http.get,
+      itemList,
+      url))));
+   }();
+   var initModel = {ctor: "_Tuple2"
+                   ,_0: {_: {}
+                        ,field: ""
+                        ,items: _L.fromArray([])
+                        ,selectedItemType: Address
+                        ,uid: 0}
+                   ,_1: apiGetItems};
    var apiPostItem = function (item) {
       return function () {
-         var url = A2($Basics._op["++"],
-         baseURI,
-         "/api/items");
+         var url = "/api/items";
          return $Effects.task($Task.map(function (_v9) {
             return function () {
                return NoOp;
@@ -4889,10 +4914,8 @@ Elm.Main.make = function (_elm) {
    var apiPutItem = function (item) {
       return function () {
          var url = A2($Basics._op["++"],
-         baseURI,
-         A2($Basics._op["++"],
          "/api/items/",
-         $Basics.toString(item.uid)));
+         $Basics.toString(item.uid));
          return $Effects.task($Task.map(function (_v11) {
             return function () {
                return NoOp;
@@ -4920,7 +4943,7 @@ Elm.Main.make = function (_elm) {
             case "Nothing":
             return $Effects.none;}
          _U.badCase($moduleName,
-         "between lines 130 and 132");
+         "between lines 114 and 116");
       }();
    });
    var upvote = F2(function (id,
@@ -4961,17 +4984,6 @@ Elm.Main.make = function (_elm) {
                 upd)};
       }();
    });
-   var itemList = A2($Json$Decode.at,
-   _L.fromArray(["data"]),
-   $Json$Decode.list(decodeItem));
-   var apiGetItems = function () {
-      var url = A2($Basics._op["++"],
-      baseURI,
-      "/api/items");
-      return $Effects.task($Task.map(UpdateItems)($Task.toMaybe(A2($Http.get,
-      itemList,
-      url))));
-   }();
    var update = F2(function (action,
    model) {
       return function () {
@@ -4992,8 +5004,7 @@ Elm.Main.make = function (_elm) {
                                          model.items,
                                          _L.fromArray([newItem]))]],
                         model)
-                        ,_1: $Effects.batch(_L.fromArray([apiPostItem(newItem)
-                                                         ,apiGetItems]))};
+                        ,_1: apiPostItem(newItem)};
               }();
             case "Downvote":
             return function () {
@@ -5029,7 +5040,7 @@ Elm.Main.make = function (_elm) {
                  var allItems = A2($Maybe.withDefault,
                  _L.fromArray([A4(Item,
                  0,
-                 "can\'t parse",
+                 "can\'t parse server response",
                  Address,
                  0)]),
                  action._0);
@@ -5058,16 +5069,9 @@ Elm.Main.make = function (_elm) {
                         ,_1: effect};
               }();}
          _U.badCase($moduleName,
-         "between lines 78 and 113");
+         "between lines 59 and 94");
       }();
    });
-   var initModel = {ctor: "_Tuple2"
-                   ,_0: {_: {}
-                        ,field: ""
-                        ,items: _L.fromArray([])
-                        ,selectedItemType: Address
-                        ,uid: 0}
-                   ,_1: apiGetItems};
    var app = $StartApp.start({_: {}
                              ,init: initModel
                              ,inputs: _L.fromArray([])
@@ -5091,10 +5095,6 @@ Elm.Main.make = function (_elm) {
                       ,Item: Item
                       ,Address: Address
                       ,Feature: Feature
-                      ,decodeItemType: decodeItemType
-                      ,encodeItem: encodeItem
-                      ,postJson: postJson
-                      ,putJson: putJson
                       ,NoOp: NoOp
                       ,NewItem: NewItem
                       ,CreateItem: CreateItem
@@ -5109,19 +5109,25 @@ Elm.Main.make = function (_elm) {
                       ,updateItems: updateItems
                       ,find: find
                       ,view: view
-                      ,strToItemType: strToItemType
+                      ,inputAreaView: inputAreaView
+                      ,itemListView: itemListView
+                      ,itemsToDisplay: itemsToDisplay
                       ,selectedItemType: selectedItemType
                       ,renderItem: renderItem
                       ,onEnter: onEnter
                       ,is13: is13
                       ,initModel: initModel
-                      ,baseURI: baseURI
+                      ,decodeItemType: decodeItemType
+                      ,encodeItem: encodeItem
+                      ,decodeItem: decodeItem
+                      ,toJsonBody: toJsonBody
+                      ,itemList: itemList
+                      ,strToItemType: strToItemType
                       ,apiGetItems: apiGetItems
                       ,apiPostItem: apiPostItem
                       ,apiPutItem: apiPutItem
-                      ,toJsonBody: toJsonBody
-                      ,decodeItem: decodeItem
-                      ,itemList: itemList
+                      ,postJson: postJson
+                      ,putJson: putJson
                       ,app: app
                       ,main: main};
    return _elm.Main.values;
