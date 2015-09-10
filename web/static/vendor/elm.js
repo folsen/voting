@@ -5116,7 +5116,6 @@ Elm.Main.make = function (_elm) {
                       ,renderItem: renderItem
                       ,onEnter: onEnter
                       ,is13: is13
-                      ,initModel: initModel
                       ,decodeItemType: decodeItemType
                       ,encodeItem: encodeItem
                       ,decodeItem: decodeItem
@@ -5128,6 +5127,7 @@ Elm.Main.make = function (_elm) {
                       ,apiPutItem: apiPutItem
                       ,postJson: postJson
                       ,putJson: putJson
+                      ,initModel: initModel
                       ,app: app
                       ,main: main};
    return _elm.Main.values;

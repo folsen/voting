@@ -236,18 +236,6 @@ is13 code =
   if code == 13 then Ok () else Err "not the right key code"
 
 
--- | Create a default model, used as the world state when the application
---   starts, also declare which effects to execute on startup
-initModel : (Model, Effects Action)
-initModel =
-  ( { items = []
-    , field = ""
-    , selectedItemType = Address
-    , uid   = 0
-    }
-  , apiGetItems
-  )
-
 -------------------------------
 -- ENCODING / DECODING STUFF --
 -------------------------------
@@ -353,6 +341,19 @@ putJson decoder url body =
 --------------
 -- PLUMBING --
 --------------
+
+-- | Create a default model, used as the world state when the application
+--   starts, also declare which effects to execute on startup
+initModel : (Model, Effects Action)
+initModel =
+  ( { items = []
+    , field = ""
+    , selectedItemType = Address
+    , uid   = 0
+    }
+  , apiGetItems
+  )
+
 
 -- | port is an elm architecture thingamajig to connect together
 --   tasks and effects
