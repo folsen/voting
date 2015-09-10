@@ -14018,9 +14018,7 @@ Elm.Voting.Api.make = function (_elm) {
    var apiPostItem = function (item) {
       return function () {
          var url = "/api/items";
-         return $Effects.task($Task.map(function (mi) {
-            return $Voting$Types.InsertItem(mi);
-         })($Task.toMaybe(A3(postJson,
+         return $Effects.task($Task.map($Voting$Types.InsertItem)($Task.toMaybe(A3(postJson,
          $Voting$Json.singleItem,
          url,
          A2($Voting$Json.toJsonBody,

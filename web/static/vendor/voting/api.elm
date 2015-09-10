@@ -27,7 +27,7 @@ apiPostItem item =
   let url = "/api/items"
   in postJson singleItem url (toJsonBody encodeItem item)
        |> Task.toMaybe
-       |> Task.map (\mi -> InsertItem mi)
+       |> Task.map InsertItem
        |> Effects.task
 
 -- | Put an item (updating it)
